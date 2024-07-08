@@ -91,7 +91,7 @@ Users can experiment by changing the models. The llm model expects language mode
 Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml : 
 
 
-    ```yaml
+    ```
     snapshots:
     graphml: true
     ```
