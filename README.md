@@ -88,15 +88,12 @@ Users can experiment by changing the models. The llm model expects language mode
     python3 -m graphrag.query --data ./ragtest/output/20240709-024831/artifacts/ --method global "What is machine learning?"
     ```
 
-Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml : 
-
-
+**Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml : **
     
     snapshots:
     graphml: true
     
-
-To visualize the generated graphml files, you can use : https://gephi.org/users/download/ or the script provided in the repo visualize-graphml.py : 
+**To visualize the generated graphml files, you can use : https://gephi.org/users/download/ or the script provided in the repo visualize-graphml.py : **
 
 Pass the path to the .graphml file to the below line in visualize-graphml.py:
 
