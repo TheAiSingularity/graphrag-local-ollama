@@ -91,10 +91,10 @@ Users can experiment by changing the models. The llm model expects language mode
 Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml : 
 
 
-    ```
+    
     snapshots:
     graphml: true
-    ```
+    
 
 To visualize the generated graphml files, you can use : https://gephi.org/users/download/ or the script provided in the repo visualize-graphml.py : 
 
