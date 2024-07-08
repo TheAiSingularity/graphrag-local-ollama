@@ -1,10 +1,21 @@
-# GraphRAG Local Ollama
+# 🚀 GraphRAG Local Ollama
 
-This repository is an adaptation of Microsoft's [GraphRAG](https://github.com/microsoft/graphrag), modified to support local models downloaded using Ollama, thus eliminating the dependency on costly OpenAPI models for inference.
+Welcome to **GraphRAG Local Ollama**! This repository is an exciting adaptation of Microsoft's [GraphRAG](https://github.com/microsoft/graphrag), tailored to support local models downloaded using Ollama. Say goodbye to costly OpenAPI models and hello to efficient, cost-effective local inference using Ollama!
 
-## Installation and Setup
+## 📄 Research Paper
 
-Follow these steps to set up and use this repository with local models for LLM and embeddings:
+For more details on the GraphRAG implementation, please refer to the [GraphRAG paper](https://arxiv.org/pdf/2404.16130).
+
+## 🌟 Features
+
+- **Local Model Support:** Leverage local models with Ollama for LLM and embeddings.
+- **Cost-Effective:** Eliminate dependency on costly OpenAPI models.
+- **Easy Setup:** Simple and straightforward setup process.
+
+## 📦 Installation and Setup
+
+Follow these steps to set up this repository and use GraphRag with local models provided by Ollama :
+
 
 1. **Create and activate a new conda environment:**
     ```bash
@@ -14,15 +25,15 @@ Follow these steps to set up and use this repository with local models for LLM a
 
 2. **Install Ollama:**
     - Visit [Ollama's website](https://ollama.com/) for installation instructions.
-    - After installation, run:
+    - Or, run:
     ```bash
     pip install ollama
     ```
 
-3. **Download the required models using Ollama:**
+3. **Download the required models using Ollama, we can choose any llm and embedding model provided under Ollama:**
     ```bash
-    ollama pull mistral
-    ollama pull nomic-embed-text
+    ollama pull mistral  #llm
+    ollama pull nomic-embed-text  #embedding
     ```
 
 4. **Clone the repository:**
@@ -30,37 +41,44 @@ Follow these steps to set up and use this repository with local models for LLM a
     git clone https://github.com/TheAiSingularity/graphrag-local-ollama.git
     ```
 
-5. **Install the necessary packages:**
-    ```bash
-    pip install -e .
-    ```
-
-6. **Navigate to the repository directory:**
+5. **Navigate to the repository directory:**
     ```bash
     cd graphrag-local-ollama/
     ```
 
-7. **Create the required input directory:**
+6. **Install the graphrag package ***This is the most important step ***:**
+    ```bash
+    pip install -e .
+    ```
+
+
+7. **Create the required input directory: This is where the experiments data and results will be stored - ./ragtest**
     ```bash
     mkdir -p ./ragtest/input
     ```
 
-8. **Initialize the indexing:**
+8. **Initialize the ./ragtest folder to create the required files:**
     ```bash
     python3 -m graphrag.index --init --root ./ragtest
     ```
 
-9. **Copy input files:**
+9. **Copy sample data folder input/  to  ./ragtest. Input/ has the sample data to run the setup. You can add your own data here in .txt format.**
     ```bash
     cp inputs/* ./ragtest/input
     ```
 
-10. **Move the settings file:**
+10. **Move the settings.yaml file, this is the main predefined config file configured with ollama local models :**
     ```bash
     mv settings.yaml ./ragtest
     ```
 
-11. **Run the indexing:**
+Users can experiment by changing the models. The llm model expects language models like llama3, mistral, phi3, etc., and the embedding model section expects embedding models like mxbai-embed-large, nomic-embed-text, etc., which are provided by Ollama. You can find the complete list of models provided by Ollama here https://ollama.com/library, which can be deployed locally. The default API base URLs are http://localhost:11434/v1 for LLM and http://localhost:11434/api for embeddings, hence they are added to the respective sections. 
+
+![alt text](<Screenshot 2024-07-09 at 3.34.31 AM-1.png>)
+
+![alt text](<Screenshot 2024-07-09 at 3.36.28 AM.png>)
+
+11. **Run the indexing, which creates a graph:**
     ```bash
     python3 -m graphrag.index --root ./ragtest
     ```
