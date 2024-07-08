@@ -74,9 +74,9 @@ Follow these steps to set up this repository and use GraphRag with local models 
 
 Users can experiment by changing the models. The llm model expects language models like llama3, mistral, phi3, etc., and the embedding model section expects embedding models like mxbai-embed-large, nomic-embed-text, etc., which are provided by Ollama. You can find the complete list of models provided by Ollama here https://ollama.com/library, which can be deployed locally. The default API base URLs are http://localhost:11434/v1 for LLM and http://localhost:11434/api for embeddings, hence they are added to the respective sections. 
 
-![LLM Configuration](<Screenshot 2024-07-09 at 3.20.50 AM.png>)
+![LLM Configuration](<Screenshot 2024-07-09 at 3.34.31 AM-1.png>)
 
-![Embedding Configuration](<Screenshot 2024-07-09 at 3.21.06 AM.png>)
+![Embedding Configuration](<Screenshot 2024-07-09 at 3.36.28 AM.png>)
 
 11. **Run the indexing, which creates a graph:**
     ```bash
@@ -91,10 +91,10 @@ Users can experiment by changing the models. The llm model expects language mode
 Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml : 
 
 
-```yaml
-snapshots:
-  graphml: true
-```
+    ```yaml
+    snapshots:
+    graphml: true
+    ```
 
 To visualize the generated graphml files, you can use : https://gephi.org/users/download/ or the script provided in the repo visualize-graphml.py : 
 
