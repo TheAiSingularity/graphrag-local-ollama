@@ -56,19 +56,15 @@ Follow these steps to set up this repository and use GraphRag with local models 
     ```bash
     mkdir -p ./ragtest/input
     ```
-
-8. **Initialize the ./ragtest folder to create the required files:**
-    ```bash
-    python -m graphrag.index --init --root ./ragtest
-    ```
-
-9. **Copy sample data folder input/  to  ./ragtest. Input/ has the sample data to run the setup. You can add your own data here in .txt format.**
+    
+8. **Copy sample data folder input/  to  ./ragtest. Input/ has the sample data to run the setup. You can add your own data here in .txt format.**
     ```bash
     cp input/* ./ragtest/input
     ```
-    **Export a dummy key as mentioned below or create a ./ragtest/.env file with GRAPHRAG_API_KEY=1234**
-   ```bash
-    export GRAPHRAG_API_KEY=1234
+    
+9. **Initialize the ./ragtest folder to create the required files:**
+    ```bash
+    python -m graphrag.index --init --root ./ragtest
     ```
 
 10. **Move the settings.yaml file, this is the main predefined config file configured with ollama local models :**
@@ -89,7 +85,7 @@ Users can experiment by changing the models. The llm model expects language mode
 
 12. **Run a query: Only supports Global method** 
     ```bash
-    python -m graphrag.query --data ./ragtest/output/20240709-024831/artifacts/ --method global "What is machine learning?"
+    python -m graphrag.query --root ./ragtest --method global "What is machinelearning?"
     ```
 
 **Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml :**
