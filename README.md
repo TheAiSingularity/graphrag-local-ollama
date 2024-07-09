@@ -64,7 +64,7 @@ Follow these steps to set up this repository and use GraphRag with local models 
 
 9. **Copy sample data folder input/  to  ./ragtest. Input/ has the sample data to run the setup. You can add your own data here in .txt format.**
     ```bash
-    cp inputs/* ./ragtest/input
+    cp input/* ./ragtest/input
     ```
     **Export a dummy key as mentioned below or create a ./ragtest/.env file with GRAPHRAG_API_KEY=1234**
    ```bash
