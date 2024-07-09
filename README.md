@@ -46,7 +46,7 @@ Follow these steps to set up this repository and use GraphRag with local models 
     cd graphrag-local-ollama/
     ```
 
-6. **Install the graphrag package ***This is the most important step ***:**
+6. **Install the graphrag package ** This is the most important step :**
     ```bash
     pip install -e .
     ```
