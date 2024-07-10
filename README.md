@@ -73,7 +73,7 @@ Follow these steps to set up this repository and use GraphRag with local models 
 
 10. **Move the settings.yaml file, this is the main predefined config file configured with ollama local models :**
     ```bash
-    mv settings.yaml ./ragtest
+    cp settings.yaml ./ragtest
     ```
 
 Users can experiment by changing the models. The llm model expects language models like llama3, mistral, phi3, etc., and the embedding model section expects embedding models like mxbai-embed-large, nomic-embed-text, etc., which are provided by Ollama. You can find the complete list of models provided by Ollama here https://ollama.com/library, which can be deployed locally. The default API base URLs are http://localhost:11434/v1 for LLM and http://localhost:11434/api for embeddings, hence they are added to the respective sections. 
