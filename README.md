@@ -1,3 +1,12 @@
+🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+
+**Need contributors to include other opensource features.**
+- Local search mode
+- Support for images in the graphdb
+- Including vectorDB support from providers like Llamaindex, LangChain into the graphrag pipeline
+
+🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+
 # 🚀 GraphRAG Local Ollama
 
 Welcome to **GraphRAG Local Ollama**! This repository is an exciting adaptation of Microsoft's [GraphRAG](https://github.com/microsoft/graphrag), tailored to support local models downloaded using Ollama. Say goodbye to costly OpenAPI models and hello to efficient, cost-effective local inference using Ollama!
@@ -11,8 +20,6 @@ For more details on the GraphRAG implementation, please refer to the [GraphRAG p
 - **Local Model Support:** Leverage local models with Ollama for LLM and embeddings.
 - **Cost-Effective:** Eliminate dependency on costly OpenAPI models.
 - **Easy Setup:** Simple and straightforward setup process.
-
-**Need contributors to include other opensource functionality supports.**
 
 ## 📦 Installation and Setup
 
