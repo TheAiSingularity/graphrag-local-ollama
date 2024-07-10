@@ -1,11 +1,6 @@
-🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+## 🤝 Contributing
 
-**Need contributors to include other opensource features.**
-- Local search mode
-- Support for images in the graphdb
-- Including vectorDB support from providers like Llamaindex, LangChain into the graphrag pipeline
-
-🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+**We welcome contributions from the community to help enhance GraphRAG Local Ollama! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details on how to get involved.**
 
 # 🚀 GraphRAG Local Ollama
 
