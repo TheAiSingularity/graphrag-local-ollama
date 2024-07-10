@@ -12,6 +12,8 @@ For more details on the GraphRAG implementation, please refer to the [GraphRAG p
 - **Cost-Effective:** Eliminate dependency on costly OpenAPI models.
 - **Easy Setup:** Simple and straightforward setup process.
 
+**Need contributors to include other opensource functionality supports.**
+
 ## 📦 Installation and Setup
 
 Follow these steps to set up this repository and use GraphRag with local models provided by Ollama :
