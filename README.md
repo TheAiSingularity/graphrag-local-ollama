@@ -16,7 +16,7 @@ The use of retrieval-augmented generation (RAG) to retrieve relevant information
 
 ## 🌟 Features
 
-- **Local Model Support:** Leverage local models with Ollama for LLM and embeddings.
+- **Local Model Support:** Leverage local models with Ollama for LLM and embeddings. Now supports llama 3.1.
 - **Cost-Effective:** Eliminate dependency on costly OpenAPI models.
 - **Easy Setup:** Simple and straightforward setup process.
 
@@ -25,7 +25,7 @@ The use of retrieval-augmented generation (RAG) to retrieve relevant information
 Follow these steps to set up this repository and use GraphRag with local models provided by Ollama :
 
 
-1. **Create and activate a new conda environment:**
+1. **Create and activate a new conda environment:  (please stick to the given python version 3.10 for no errors)**
     ```bash
     conda create -n graphrag-ollama-local python=3.10
     conda activate graphrag-ollama-local
