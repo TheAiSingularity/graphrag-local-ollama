@@ -35,6 +35,7 @@ Follow these steps to set up this repository and use GraphRag with local models 
     - Visit [Ollama's website](https://ollama.com/) for installation instructions.
     - Or, run:
     ```bash
+    curl -fsSL https://ollama.com/install.sh | sh #ollama for linux
     pip install ollama
     ```
 
