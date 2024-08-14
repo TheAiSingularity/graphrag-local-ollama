@@ -39,7 +39,7 @@ Follow these steps to set up this repository and use GraphRag with local models 
     pip install ollama
     ```
 
-3. **Download the required models using Ollama, we can choose any llm and embedding model provided under Ollama:**
+3. **Download the required models using Ollama, we can choose mistral for llm and any embedding model provided under Ollama:**
     ```bash
     ollama pull mistral  #llm
     ollama pull nomic-embed-text  #embedding
