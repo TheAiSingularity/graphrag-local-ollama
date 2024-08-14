@@ -2,6 +2,8 @@
 
 **We welcome contributions from the community to help enhance GraphRAG Local Ollama! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details on how to get involved.**
 
+Need support for llama integration.
+
 # 🚀 GraphRAG Local Ollama - Knowledge Graph
 
 Welcome to **GraphRAG Local Ollama**! This repository is an exciting adaptation of Microsoft's [GraphRAG](https://github.com/microsoft/graphrag), tailored to support local models downloaded using Ollama. Say goodbye to costly OpenAPI models and hello to efficient, cost-effective local inference using Ollama!
@@ -16,7 +18,7 @@ The use of retrieval-augmented generation (RAG) to retrieve relevant information
 
 ## 🌟 Features
 
-- **Local Model Support:** Leverage local models with Ollama for LLM and embeddings. Now supports llama 3.1.
+- **Local Model Support:** Leverage local models with Ollama for LLM and embeddings.
 - **Cost-Effective:** Eliminate dependency on costly OpenAPI models.
 - **Easy Setup:** Simple and straightforward setup process.
 
@@ -39,7 +41,7 @@ Follow these steps to set up this repository and use GraphRag with local models 
     pip install ollama
     ```
 
-3. **Download the required models using Ollama, we can choose mistral for llm and any embedding model provided under Ollama:**
+3. **Download the required models using Ollama, we can choose from (mistral,gemma2, qwen2) for llm and any embedding model provided under Ollama:**
     ```bash
     ollama pull mistral  #llm
     ollama pull nomic-embed-text  #embedding
