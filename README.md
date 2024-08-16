@@ -96,7 +96,7 @@ Users can experiment by changing the models. The llm model expects language mode
 
 12. **Run a query: Only supports Global method** 
     ```bash
-    python -m graphrag.query --root ./ragtest --method global "What is machinelearning?"
+    python -m graphrag.query --root ./ragtest --method global "What is machine learning?"
     ```
 
 **Graphs can be saved which further can be used for visualization by changing the graphml to "true" in the settings.yaml :**
