@@ -82,7 +82,10 @@ class OpenAIEmbedding(BaseTextEmbedding, OpenAILLMImpl):
         chunk_lens = []
         for chunk in token_chunks:
             try:
-                embedding, chunk_len = self._embed_with_retry(chunk, **kwargs)
+
+                # change the embedding、chunk_len
+                embedding = ollama.embeddings(model='nomic-embed-text', prompt=chunk)['embedding']
+                chunk_len = len(chunk)
                 chunk_embeddings.append(embedding)
                 chunk_lens.append(chunk_len)
             # TODO: catch a more specific exception
@@ -93,9 +96,7 @@ class OpenAIEmbedding(BaseTextEmbedding, OpenAILLMImpl):
                 )
 
                 continue
-        chunk_embeddings = np.average(chunk_embeddings, axis=0, weights=chunk_lens)
-        chunk_embeddings = chunk_embeddings / np.linalg.norm(chunk_embeddings)
-        return chunk_embeddings.tolist()
+        return chunk_embeddings
 
     async def aembed(self, text: str, **kwargs: Any) -> list[float]:
         """
