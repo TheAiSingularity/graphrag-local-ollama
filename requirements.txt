@@ -20,7 +20,7 @@ pyaml-env==1.2.1
 python-dotenv==1.0.0
 tenacity==8.2.3
 swifter==1.4.0
-pydantic==2
+pydantic==2.9.2
 rich==13.6.0
 textual==0.70.0
 devtools==0.12.2
