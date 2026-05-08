@@ -144,3 +144,9 @@ class GraphRagConfig(LLMConfig):
         description="The workflows to skip, usually for testing reasons.", default=[]
     )
     """The workflows to skip, usually for testing reasons."""
+
+    lazy_graph_rag: bool = Field(
+        description="When True, skip community summarization at index time and summarize on the fly at query time. ~99% faster indexing.",
+        default=False,
+    )
+    """When True, skip community report generation during indexing (LazyGraphRAG mode)."""

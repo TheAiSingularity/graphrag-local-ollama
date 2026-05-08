@@ -6,7 +6,7 @@
 import argparse
 from enum import Enum
 
-from .cli import run_global_search, run_local_search
+from .cli import run_global_search, run_lazy_search, run_local_search
 
 INVALID_METHOD_ERROR = "Invalid method"
 
@@ -16,6 +16,7 @@ class SearchType(Enum):
 
     LOCAL = "local"
     GLOBAL = "global"
+    LAZY = "lazy"
 
     def __str__(self):
         """Return the string representation of the enum value."""
@@ -85,6 +86,13 @@ if __name__ == "__main__":
                 args.data,
                 args.root,
                 args.community_level,
+                args.response_type,
+                args.query[0],
+            )
+        case SearchType.LAZY:
+            run_lazy_search(
+                args.data,
+                args.root,
                 args.response_type,
                 args.query[0],
             )

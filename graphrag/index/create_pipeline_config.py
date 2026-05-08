@@ -153,7 +153,19 @@ def _get_embedded_fields(settings: GraphRagConfig) -> set[str]:
 
 
 def _determine_skip_workflows(settings: GraphRagConfig) -> list[str]:
-    skip_workflows = settings.skip_workflows
+    skip_workflows = list(settings.skip_workflows)
+
+    # LazyGraphRAG: skip community summarization at index time
+    if settings.lazy_graph_rag:
+        for wf in (create_final_communities, create_final_community_reports):
+            if wf not in skip_workflows:
+                skip_workflows.append(wf)
+        log.info(
+            "LazyGraphRAG mode enabled — skipping %s and %s",
+            create_final_communities,
+            create_final_community_reports,
+        )
+
     if (
         create_final_covariates in skip_workflows
         and join_text_units_to_covariate_ids not in skip_workflows

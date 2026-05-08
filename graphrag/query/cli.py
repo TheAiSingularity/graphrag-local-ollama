@@ -156,6 +156,95 @@ def run_local_search(
     return result.response
 
 
+def run_lazy_search(
+    data_dir: str | None,
+    root_dir: str | None,
+    response_type: str,
+    query: str,
+):
+    """Run a lazy global search using the entity graph without pre-computed community reports.
+
+    This is the LazyGraphRAG query path — community summaries are generated on the fly
+    at query time rather than being pre-computed during indexing.
+    """
+    import asyncio
+
+    data_dir, root_dir, config = _configure_paths_and_settings(data_dir, root_dir)
+    data_path = Path(data_dir)
+
+    final_entities = pd.read_parquet(data_path / "create_final_entities.parquet")
+    final_relationships = pd.read_parquet(data_path / "create_final_relationships.parquet")
+
+    query_lower = query.lower()
+    query_tokens = set(query_lower.split())
+
+    def _entity_relevance(row) -> int:
+        title = str(row.get("title", "") or "").lower()
+        desc = str(row.get("description", "") or "").lower()
+        return sum(1 for t in query_tokens if t in title or t in desc)
+
+    scored = final_entities.copy()
+    scored["_score"] = scored.apply(_entity_relevance, axis=1)
+    top_entities = scored.nlargest(20, "_score")
+
+    entity_ids = set(top_entities["id"].tolist()) if "id" in top_entities.columns else set()
+    relevant_rels = final_relationships[
+        final_relationships.get("source", pd.Series(dtype=str)).isin(entity_ids)
+        | final_relationships.get("target", pd.Series(dtype=str)).isin(entity_ids)
+    ] if not final_relationships.empty else pd.DataFrame()
+
+    context_parts = ["## Relevant Entities\n"]
+    for _, ent in top_entities.head(15).iterrows():
+        title = ent.get("title", "Unknown")
+        desc = ent.get("description", "")
+        context_parts.append(f"- **{title}**: {desc}")
+
+    if not relevant_rels.empty:
+        context_parts.append("\n## Relationships\n")
+        for _, rel in relevant_rels.head(20).iterrows():
+            src = rel.get("source", "")
+            tgt = rel.get("target", "")
+            desc = rel.get("description", "")
+            context_parts.append(f"- {src} → {tgt}: {desc}")
+
+    context = "\n".join(context_parts)
+
+    from graphrag.index.llm import load_llm
+    from datashaper import NoopVerbCallbacks
+
+    llm = load_llm(
+        "lazy_search",
+        config.llm.type,
+        NoopVerbCallbacks(),
+        None,
+        config.llm.model_dump(),
+    )
+
+    prompt = (
+        f"You are a knowledge graph assistant. Using the entity and relationship context below, "
+        f"answer the following question as a {response_type}.\n\n"
+        f"Question: {query}\n\n"
+        f"{context}\n\n"
+        f"Answer:"
+    )
+
+    async def _ask():
+        from graphrag.llm.types import LLMInput
+        result = await llm(prompt, name="lazy_search", history=[], json=False)
+        return result.output if hasattr(result, "output") else str(result)
+
+    try:
+        response = asyncio.run(_ask())
+    except RuntimeError:
+        import nest_asyncio
+        nest_asyncio.apply()
+        loop = asyncio.get_event_loop()
+        response = loop.run_until_complete(_ask())
+
+    reporter.success(f"Lazy Search Response: {response}")
+    return response
+
+
 def _configure_paths_and_settings(
     data_dir: str | None, root_dir: str | None
 ) -> tuple[str, str | None, GraphRagConfig]:

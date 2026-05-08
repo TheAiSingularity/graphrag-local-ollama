@@ -45,5 +45,6 @@ class GraphRagConfigInput(LLMConfigInput):
     umap: NotRequired[UmapConfigInput | None]
     encoding_model: NotRequired[str | None]
     skip_workflows: NotRequired[list[str] | str | None]
+    lazy_graph_rag: NotRequired[bool | None]
     local_search: NotRequired[LocalSearchConfigInput | None]
     global_search: NotRequired[GlobalSearchConfigInput | None]
