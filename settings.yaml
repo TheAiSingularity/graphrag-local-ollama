@@ -1,8 +1,14 @@
 
 encoding_model: cl100k_base
 skip_workflows: []
+
+# Set to true to enable LazyGraphRAG mode:
+# community summaries are skipped at index time and generated on the fly at query time.
+# This makes indexing ~99% faster at the cost of slightly slower first-query responses.
+# Query with: python -m graphrag.query --method lazy "your question"
+lazy_graph_rag: false
 llm:
-  api_key: ${GRAPHRAG_API_KEY}
+  api_key: ${GRAPHRAG_API_KEY:ollama}
   type: openai_chat # or azure_openai_chat
   model: mistral
   model_supports_json: true # recommended if this is available for your model.
@@ -29,10 +35,10 @@ embeddings:
   ## parallelization: override the global parallelization settings for embeddings
   async_mode: threaded # or asyncio
   llm:
-    api_key: ${GRAPHRAG_API_KEY}
+    api_key: ${GRAPHRAG_API_KEY:ollama}
     type: openai_embedding # or azure_openai_embedding
     model: nomic-embed-text
-    api_base: http://localhost:11434/api
+    api_base: http://localhost:11434/v1
     # api_version: 2024-02-15-preview
     # organization: <organization_id>
     # deployment_name: <azure_model_deployment_name>

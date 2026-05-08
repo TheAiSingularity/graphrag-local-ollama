@@ -3,8 +3,13 @@
 
 """A module containing run_gi,  run_extract_entities and _create_text_splitter methods to run graph intelligence."""
 
+import asyncio
+import logging
+
 import networkx as nx
 from datashaper import VerbCallbacks
+
+log = logging.getLogger(__name__)
 
 from graphrag.config.enums import LLMType
 from graphrag.index.cache import PipelineCache
@@ -84,15 +89,26 @@ async def run_extract_entities(
     if not prechunked:
         text_list = text_splitter.split_text("\n".join(text_list))
 
-    results = await extractor(
-        list(text_list),
-        {
-            "entity_types": entity_types,
-            "tuple_delimiter": tuple_delimiter,
-            "record_delimiter": record_delimiter,
-            "completion_delimiter": completion_delimiter,
-        },
-    )
+    extraction_timeout = args.get("extraction_timeout", 180)
+    try:
+        results = await asyncio.wait_for(
+            extractor(
+                list(text_list),
+                {
+                    "entity_types": entity_types,
+                    "tuple_delimiter": tuple_delimiter,
+                    "record_delimiter": record_delimiter,
+                    "completion_delimiter": completion_delimiter,
+                },
+            ),
+            timeout=extraction_timeout,
+        )
+    except asyncio.TimeoutError:
+        log.warning(
+            "Entity extraction timed out after %ds — returning empty result for this chunk",
+            extraction_timeout,
+        )
+        return EntityExtractionResult(entities=[], graphml_graph="")
 
     graph = results.output
     # Map the "source_id" back to the "id" field

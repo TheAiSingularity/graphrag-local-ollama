@@ -91,7 +91,8 @@ def create_graphrag_config(
                 reader.str(Fragment.deployment_name) or base.deployment_name
             )
 
-            if api_key is None and not _is_azure(llm_type):
+            _is_local = api_base and ("localhost" in api_base or "127.0.0.1" in api_base)
+            if api_key is None and not _is_azure(llm_type) and not _is_local:
                 raise ApiKeyMissingError
             if _is_azure(llm_type):
                 if api_base is None:
@@ -149,7 +150,8 @@ def create_graphrag_config(
             )
             deployment_name = reader.str(Fragment.deployment_name)
 
-            if api_key is None and not _is_azure(api_type):
+            _is_local_embed = api_base and ("localhost" in api_base or "127.0.0.1" in api_base)
+            if api_key is None and not _is_azure(api_type) and not _is_local_embed:
                 raise ApiKeyMissingError(embedding=True)
             if _is_azure(api_type):
                 if api_base is None:
@@ -505,6 +507,7 @@ def create_graphrag_config(
 
         encoding_model = reader.str(Fragment.encoding_model) or defs.ENCODING_MODEL
         skip_workflows = reader.list("skip_workflows") or []
+        lazy_graph_rag = reader.bool("lazy_graph_rag") or False
 
     return GraphRagConfig(
         root_dir=root_dir,
@@ -527,6 +530,7 @@ def create_graphrag_config(
         cluster_graph=cluster_graph_model,
         encoding_model=encoding_model,
         skip_workflows=skip_workflows,
+        lazy_graph_rag=lazy_graph_rag,
         local_search=local_search_model,
         global_search=global_search_model,
     )

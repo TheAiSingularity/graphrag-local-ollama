@@ -5,11 +5,49 @@
 
 import json
 import logging
+import unicodedata
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Collection, Iterable
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Literal, cast
+
+# CJK and other non-Latin Unicode block ranges where character-count chunking is more reliable
+_CJK_RANGES = [
+    (0x4E00, 0x9FFF),   # CJK Unified Ideographs
+    (0x3400, 0x4DBF),   # CJK Extension A
+    (0x20000, 0x2A6DF), # CJK Extension B
+    (0x3040, 0x309F),   # Hiragana
+    (0x30A0, 0x30FF),   # Katakana
+    (0xAC00, 0xD7AF),   # Hangul Syllables
+    (0x1100, 0x11FF),   # Hangul Jamo
+    (0x0600, 0x06FF),   # Arabic
+    (0x0400, 0x04FF),   # Cyrillic
+]
+
+
+def _is_cjk_dominant(text: str, threshold: float = 0.2) -> bool:
+    """Return True when more than *threshold* fraction of chars are non-Latin ideographic."""
+    if not text:
+        return False
+    cjk_count = sum(
+        1 for ch in text
+        if any(lo <= ord(ch) <= hi for lo, hi in _CJK_RANGES)
+    )
+    return (cjk_count / len(text)) >= threshold
+
+
+def _split_by_chars(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
+    """Character-count based splitter used for CJK and other ideographic text."""
+    if not text:
+        return []
+    chunks: list[str] = []
+    start = 0
+    while start < len(text):
+        end = min(start + chunk_size, len(text))
+        chunks.append(text[start:end])
+        start += chunk_size - chunk_overlap
+    return chunks
 
 import pandas as pd
 import tiktoken
@@ -60,8 +98,8 @@ class TextSplitter(ABC):
         strip_whitespace: bool = True,
     ):
         """Init method definition."""
-        self._chunk_size = chunk_size
-        self._chunk_overlap = chunk_overlap
+        self._chunk_size = int(chunk_size)
+        self._chunk_overlap = int(chunk_overlap)
         self._length_function = length_function
         self._keep_separator = keep_separator
         self._add_start_index = add_start_index
@@ -129,6 +167,11 @@ class TokenTextSplitter(TextSplitter):
         if not isinstance(text, str):
             msg = f"Attempting to split a non-string value, actual is {type(text)}"
             raise TypeError(msg)
+
+        # Use character-count chunking for CJK/ideographic-dominant text because
+        # tiktoken BPE tokenisation produces misleading token counts for these scripts.
+        if _is_cjk_dominant(text):
+            return _split_by_chars(text, self._chunk_size, self._chunk_overlap)
 
         tokenizer = Tokenizer(
             chunk_overlap=self._chunk_overlap,

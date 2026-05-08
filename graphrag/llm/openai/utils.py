@@ -89,15 +89,37 @@ def get_completion_llm_args(
 
 def try_parse_json_object(input: str) -> dict:
     """Generate JSON-string output using best-attempt prompting & parsing techniques."""
-    try:
-        result = json.loads(input)
-    except json.JSONDecodeError:
-        log.exception("error loading json, json=%s", input)
-        raise
-    else:
-        if not isinstance(result, dict):
-            raise TypeError
+    import re as _re
+
+    def _attempt_parse(text: str) -> dict | None:
+        try:
+            result = json.loads(text)
+            if isinstance(result, dict):
+                return result
+        except json.JSONDecodeError:
+            pass
+        return None
+
+    result = _attempt_parse(input)
+    if result is not None:
         return result
+
+    # Strip markdown code fences
+    stripped = _re.sub(r"```(?:json)?\s*", "", input).strip().rstrip("```").strip()
+    result = _attempt_parse(stripped)
+    if result is not None:
+        return result
+
+    # Extract first {...} block
+    match = _re.search(r"\{.*\}", input, _re.DOTALL)
+    if match:
+        result = _attempt_parse(match.group(0))
+        if result is not None:
+            log.warning("Recovered JSON from LLM response via regex extraction")
+            return result
+
+    log.error("Failed to parse JSON from LLM response, returning empty dict. Input: %s", input[:200])
+    return {}
 
 
 def get_sleep_time_from_error(e: Any) -> float:

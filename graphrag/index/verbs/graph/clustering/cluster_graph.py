@@ -58,7 +58,15 @@ def cluster_graph(
     ```
     """
     output_df = cast(pd.DataFrame, input.get_input())
-    results = output_df[column].apply(lambda graph: run_layout(strategy, graph))
+
+    if output_df.empty or column not in output_df.columns or output_df[column].isna().all():
+        log.warning("cluster_graph: no graph data found, skipping clustering")
+        output_df[to] = [None] * len(output_df)
+        if level_to:
+            output_df[level_to] = [[] for _ in range(len(output_df))]
+        return TableContainer(table=output_df)
+
+    results = output_df[column].apply(lambda graph: run_layout(strategy, graph) if graph else [])
 
     community_map_to = "communities"
     output_df[community_map_to] = results

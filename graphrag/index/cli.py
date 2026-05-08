@@ -6,7 +6,6 @@
 import asyncio
 import json
 import logging
-import platform
 import sys
 import time
 import warnings
@@ -141,21 +140,29 @@ def index_cli(
 
                 progress_reporter.info(str(output.result))
 
-        if platform.system() == "Windows":
-            import nest_asyncio  # type: ignore Ignoring because out of windows this will cause an error
-
-            nest_asyncio.apply()
+        if sys.platform == "win32":
+            try:
+                import nest_asyncio  # type: ignore
+                nest_asyncio.apply()
+            except ImportError:
+                pass
             loop = asyncio.get_event_loop()
             loop.run_until_complete(execute())
         elif sys.version_info >= (3, 11):
-            import uvloop  # type: ignore Ignoring because on windows this will cause an error
+            try:
+                import uvloop  # type: ignore
 
-            with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:  # type: ignore Ignoring because minor versions this will throw an error
-                runner.run(execute())
+                with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:  # type: ignore
+                    runner.run(execute())
+            except ImportError:
+                asyncio.run(execute())
         else:
-            import uvloop  # type: ignore Ignoring because on windows this will cause an error
+            try:
+                import uvloop  # type: ignore
 
-            uvloop.install()
+                uvloop.install()
+            except ImportError:
+                pass
             asyncio.run(execute())
 
     _run_workflow_async()
@@ -167,8 +174,30 @@ def index_cli(
     else:
         progress_reporter.success("All workflows completed successfully.")
 
+    _validate_artifacts(root, run_id, progress_reporter)
+
     if cli:
         sys.exit(1 if encountered_errors else 0)
+
+
+def _validate_artifacts(root: str, run_id: str, reporter: ProgressReporter) -> None:
+    """Warn if expected output parquet files are missing after indexing."""
+    output_dir = Path(root) / "output" / run_id / "artifacts"
+    required = ["create_final_entities.parquet", "create_final_communities.parquet"]
+    if not output_dir.exists():
+        reporter.warning(
+            f"Output directory {output_dir} not found. "
+            "Check that indexing completed without errors."
+        )
+        return
+    missing = [f for f in required if not (output_dir / f).exists()]
+    if missing:
+        reporter.warning(
+            f"Missing expected output files: {missing}. "
+            "This usually means the LLM did not return valid JSON during entity extraction. "
+            "Verify that your model supports JSON output and that 'model_supports_json: true' "
+            "is set in settings.yaml."
+        )
 
 
 def _initialize_project_at(path: str, reporter: ProgressReporter) -> None:

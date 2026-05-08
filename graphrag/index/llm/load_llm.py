@@ -183,6 +183,10 @@ def _load_azure_openai_embeddings_llm(
 
 def _get_base_config(config: dict[str, Any]) -> dict[str, Any]:
     api_key = config.get("api_key")
+    # For local Ollama usage the API key is not validated server-side.
+    # Treat unresolved env-var placeholders and empty values as a dummy key.
+    if not api_key or (isinstance(api_key, str) and api_key.startswith("${")):
+        api_key = "ollama"
 
     return {
         # Pass in all parameterized values
