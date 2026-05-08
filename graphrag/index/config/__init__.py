@@ -15,6 +15,7 @@ from .input import (
     PipelineCSVInputConfig,
     PipelineInputConfig,
     PipelineInputConfigTypes,
+    PipelineJSONInputConfig,
     PipelineTextInputConfig,
 )
 from .pipeline import PipelineConfig
@@ -54,6 +55,7 @@ __all__ = [
     "PipelineFileStorageConfig",
     "PipelineInputConfig",
     "PipelineInputConfigTypes",
+    "PipelineJSONInputConfig",
     "PipelineMemoryCacheConfig",
     "PipelineMemoryCacheConfig",
     "PipelineMemoryStorageConfig",

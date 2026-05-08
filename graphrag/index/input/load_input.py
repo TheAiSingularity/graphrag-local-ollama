@@ -20,6 +20,8 @@ from graphrag.index.storage import (
 
 from .csv import input_type as csv
 from .csv import load as load_csv
+from .json import input_type as json
+from .json import load as load_json
 from .text import input_type as text
 from .text import load as load_text
 
@@ -27,6 +29,7 @@ log = logging.getLogger(__name__)
 loaders: dict[str, Callable[..., Awaitable[pd.DataFrame]]] = {
     text: load_text,
     csv: load_csv,
+    json: load_json,
 }
 
 

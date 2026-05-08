@@ -116,5 +116,23 @@ class PipelineTextInputConfig(PipelineInputConfig[Literal[InputFileType.text]]):
     """Number of characters to use from the text as the title."""
 
 
-PipelineInputConfigTypes = PipelineCSVInputConfig | PipelineTextInputConfig
+class PipelineJSONInputConfig(PipelineInputConfig[Literal[InputFileType.json]]):
+    """Represent the configuration for a JSON / JSONL input."""
+
+    file_type: Literal[InputFileType.json] = InputFileType.json
+
+    text_field: str | None = pydantic_Field(
+        description="The field to use as the document text (default: 'text').",
+        default=None,
+    )
+    """The field to use as the document text."""
+
+    title_field: str | None = pydantic_Field(
+        description="The field to use as the document title (default: 'title').",
+        default=None,
+    )
+    """The field to use as the document title."""
+
+
+PipelineInputConfigTypes = PipelineCSVInputConfig | PipelineTextInputConfig | PipelineJSONInputConfig
 """Represent the types of inputs that can be used in a pipeline."""

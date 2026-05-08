@@ -28,6 +28,8 @@ from graphrag.query.structured_search.global_search.search import GlobalSearch
 from graphrag.query.structured_search.local_search.mixed_context import (
     LocalSearchMixedContext,
 )
+from graphrag.query.structured_search.basic_search.search import BasicSearch
+from graphrag.query.structured_search.drift_search.search import DRIFTSearch
 from graphrag.query.structured_search.local_search.search import LocalSearch
 from graphrag.vector_stores import BaseVectorStore
 
@@ -143,6 +145,94 @@ def get_local_search_engine(
             "max_tokens": ls_config.max_tokens,  # change this based on the token limit you have on your model (if you are using a model with 8k limit, a good setting could be 5000)
         },
         response_type=response_type,
+    )
+
+
+def get_drift_search_engine(
+    config: GraphRagConfig,
+    reports: list[CommunityReport],
+    text_units: list[TextUnit],
+    entities: list[Entity],
+    relationships: list[Relationship],
+    covariates: dict[str, list[Covariate]],
+    response_type: str,
+    description_embedding_store: BaseVectorStore,
+) -> DRIFTSearch:
+    """Create a DRIFT search engine based on data + configuration."""
+    llm = get_llm(config)
+    text_embedder = get_text_embedder(config)
+    token_encoder = tiktoken.get_encoding(config.encoding_model)
+    ls_config = config.local_search
+
+    context_builder = LocalSearchMixedContext(
+        community_reports=reports,
+        text_units=text_units,
+        entities=entities,
+        relationships=relationships,
+        covariates=covariates,
+        entity_text_embeddings=description_embedding_store,
+        embedding_vectorstore_key=EntityVectorStoreKey.ID,
+        text_embedder=text_embedder,
+        token_encoder=token_encoder,
+    )
+
+    return DRIFTSearch(
+        llm=llm,
+        context_builder=context_builder,
+        reports=reports,
+        token_encoder=token_encoder,
+        response_type=response_type,
+        max_depth=2,
+        max_actions=10,
+        drift_k_followups=2,
+        primer_max_reports=10,
+        llm_params={
+            "max_tokens": ls_config.llm_max_tokens,
+            "temperature": 0.0,
+        },
+        context_builder_params={
+            "text_unit_prop": ls_config.text_unit_prop,
+            "community_prop": ls_config.community_prop,
+            "conversation_history_max_turns": ls_config.conversation_history_max_turns,
+            "conversation_history_user_turns_only": True,
+            "top_k_mapped_entities": ls_config.top_k_entities,
+            "top_k_relationships": ls_config.top_k_relationships,
+            "include_entity_rank": True,
+            "include_relationship_weight": True,
+            "include_community_rank": False,
+            "return_candidate_context": False,
+            "embedding_vectorstore_key": EntityVectorStoreKey.ID,
+            "max_tokens": ls_config.max_tokens,
+        },
+    )
+
+
+def get_basic_search_engine(
+    config: GraphRagConfig,
+    entities: list[Entity],
+    relationships: list[Relationship],
+    text_units: list[TextUnit],
+    response_type: str,
+    description_embedding_store: BaseVectorStore,
+) -> BasicSearch:
+    """Create a basic (vector-similarity) search engine."""
+    llm = get_llm(config)
+    text_embedder = get_text_embedder(config)
+    token_encoder = tiktoken.get_encoding(config.encoding_model)
+
+    return BasicSearch(
+        llm=llm,
+        text_embedder=text_embedder,
+        entity_text_embeddings=description_embedding_store,
+        entities=entities,
+        relationships=relationships,
+        text_units=text_units,
+        token_encoder=token_encoder,
+        response_type=response_type,
+        top_k_entities=10,
+        top_k_relationships=10,
+        include_text_units=True,
+        llm_params={"max_tokens": 1500, "temperature": 0.0},
     )
 
 

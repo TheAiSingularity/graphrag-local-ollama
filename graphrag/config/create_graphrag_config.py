@@ -324,6 +324,8 @@ def create_graphrag_config(
                 or (
                     defs.INPUT_TEXT_PATTERN
                     if file_type == InputFileType.text
+                    else ".*\\.(json|jsonl)$"
+                    if file_type == InputFileType.json
                     else defs.INPUT_CSV_PATTERN
                 ),
                 source_column=reader.str("source_column"),

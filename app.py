@@ -211,10 +211,10 @@ with gr.Blocks(title="GraphRAG Local Ollama", theme=gr.themes.Soft()) as demo:
         gr.Markdown("Ask questions about your indexed documents.")
         question_box = gr.Textbox(label="Question", placeholder="What are the main themes in the documents?", lines=2)
         method_radio = gr.Radio(
-            choices=["Global", "Local", "Lazy"],
+            choices=["Global", "Local", "Drift", "Basic", "Lazy"],
             value="Global",
             label="Search method",
-            info="Global: broad synthesis | Local: entity-focused | Lazy: no pre-computed reports needed",
+            info="Global: broad synthesis | Local: entity-focused | Drift: iterative graph reasoning | Basic: fast vector search | Lazy: no pre-computed reports needed",
         )
         query_btn = gr.Button("Ask", variant="primary")
         answer_box = gr.Textbox(label="Answer", lines=10, interactive=False)

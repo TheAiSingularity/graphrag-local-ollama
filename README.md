@@ -22,7 +22,11 @@ The use of retrieval-augmented generation (RAG) to retrieve relevant information
 - **Cost-Effective:** Eliminate dependency on costly OpenAPI models.
 - **Easy Setup:** Simple and straightforward setup process.
 - **Web UI:** Browser-based interface for indexing, querying, and graph visualization.
+- **5 Query Modes:** Global, Local, DRIFT (iterative reasoning), Basic (fast vector search), Lazy.
 - **LazyGraphRAG Mode:** Skip community summarization at index time — ~99% faster indexing, on-demand summarization at query time.
+- **DRIFT Search:** Dynamic Reasoning with Iterative Feedback and Tracking — iterative knowledge-graph exploration that generates and follows up sub-questions for deeper answers.
+- **Basic Search:** Lightweight vector-similarity RAG — no community reports needed, fast answers from entity embeddings.
+- **JSON/JSONL Input:** Index JSON and JSONL document collections in addition to `.txt` and `.csv`.
 - **Multilingual:** Full UTF-8 support with CJK-aware text chunking (Chinese, Japanese, Korean, Arabic, Cyrillic).
 - **Docker:** One-command setup with `docker-compose up`.
 
@@ -65,7 +69,7 @@ python app.py
 | Tab | What it does |
 |-----|-------------|
 | 📂 Index | Upload `.txt` files, run indexing, see live log output |
-| 🔍 Query | Ask questions using Global / Local / Lazy search |
+| 🔍 Query | Ask questions using Global / Local / DRIFT / Basic / Lazy search |
 | 🗺️ Graph | Interactive knowledge-graph visualizer (requires pyvis) |
 | ⚙️ Settings | Edit model names, chunk size, LazyGraphRAG toggle |
 
@@ -86,6 +90,74 @@ python -m graphrag.query --root ./ragtest --method lazy "What is machine learnin
 ```
 
 > **Trade-off:** First-query responses are slightly slower than standard global search because summaries are computed at query time. For large datasets this is still dramatically cheaper overall.
+
+---
+
+## 🔀 DRIFT Search
+
+Inspired by Microsoft GraphRAG v0.4+'s DRIFT (Dynamic Reasoning with Iterative Feedback and Tracking), this mode performs **iterative knowledge-graph exploration**:
+
+1. **Primer phase** — decomposes your question into scored sub-questions using community reports as context.
+2. **Search loop** — answers each sub-question using the entity graph, then generates follow-up questions from the answers (priority-queue, depth-limited).
+3. **Reduce phase** — synthesises all intermediate answers into a final comprehensive response.
+
+DRIFT produces deeper, more exploratory answers than Global or Local search — especially useful for open-ended research questions.
+
+**Query with DRIFT:**
+```bash
+python -m graphrag.query --root ./ragtest --method drift "What are the main causes of the conflict?"
+```
+
+> **Note:** DRIFT works best when community reports are available. If `lazy_graph_rag: true` was used during indexing, the primer step will have limited context but the search loop still operates normally.
+
+---
+
+## ⚡ Basic Search
+
+A lightweight vector-similarity RAG mode — **no community reports required**. Works immediately after a minimal index run.
+
+1. Embeds the query using your Ollama embedding model.
+2. Retrieves the top-10 most similar entities from the vector store.
+3. Builds context from those entities, their relationships, and source text units.
+4. Answers with the LLM.
+
+Use Basic search for fast, factual lookups when you don't need the full graph-traversal reasoning.
+
+**Query with Basic search:**
+```bash
+python -m graphrag.query --root ./ragtest --method basic "Who is Alan Turing?"
+```
+
+---
+
+## 📄 JSON / JSONL Input
+
+In addition to `.txt` and `.csv`, you can now index JSON and JSONL document collections.
+
+**JSON array format** (`documents.json`):
+```json
+[
+  {"id": "doc1", "title": "Introduction", "text": "This is the document text..."},
+  {"id": "doc2", "text": "Another document..."}
+]
+```
+
+**JSONL format** (`documents.jsonl`, one JSON object per line):
+```jsonl
+{"id": "doc1", "title": "Chapter 1", "text": "Text of chapter 1..."}
+{"id": "doc2", "title": "Chapter 2", "text": "Text of chapter 2..."}
+```
+
+**Enable in `settings.yaml`:**
+```yaml
+input:
+  type: file
+  file_type: json          # was: text or csv
+  base_dir: "input"
+  file_pattern: ".*\\.(json|jsonl)$"
+```
+
+Required field: `text`. Optional fields: `id`, `title`, `source`.
 
 ---
 
@@ -173,15 +245,21 @@ Users can experiment by changing the models. The llm model expects language mode
     python -m graphrag.index --root ./ragtest
     ```
 
-12. **Run a query (three methods available):**
+12. **Run a query (five methods available):**
     ```bash
-    # Global search — broad synthesis across the whole corpus
+    # Global — broad synthesis across the whole corpus (uses community reports)
     python -m graphrag.query --root ./ragtest --method global "What is machine learning?"
 
-    # Local search — entity-focused, uses knowledge graph + text chunks
+    # Local — entity-focused, uses knowledge graph + text chunks
     python -m graphrag.query --root ./ragtest --method local "What is machine learning?"
 
-    # Lazy search — no pre-computed community reports needed (use with lazy_graph_rag: true)
+    # DRIFT — iterative graph reasoning (decomposes → explores → synthesises)
+    python -m graphrag.query --root ./ragtest --method drift "What are the main themes?"
+
+    # Basic — fast vector-similarity search (no community reports needed)
+    python -m graphrag.query --root ./ragtest --method basic "Who invented the transformer?"
+
+    # Lazy — on-demand community summarisation (use with lazy_graph_rag: true)
     python -m graphrag.query --root ./ragtest --method lazy "What is machine learning?"
     ```
 
