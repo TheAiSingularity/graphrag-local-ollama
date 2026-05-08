@@ -1,0 +1,2 @@
+gradio>=4.0
+pyvis>=0.3
