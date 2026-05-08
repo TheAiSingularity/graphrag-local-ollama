@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  graphrag:
+    build: .
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - GRAPHRAG_API_KEY=ollama
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+      - ./settings.yaml:/app/settings.yaml
+    env_file:
+      - .env
+
+volumes:
+  ollama_data:
