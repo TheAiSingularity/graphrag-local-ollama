@@ -38,5 +38,7 @@ def chunk_text(
     if token_encoder is None:
         token_encoder = tiktoken.get_encoding("cl100k_base")
     tokens = token_encoder.encode(text)  # type: ignore
+    # Add the following line of code to decode tokens into a string
+    tokens = token_encoder.decode(tokens) 
     chunk_iterator = batched(iter(tokens), max_tokens)
     yield from chunk_iterator
