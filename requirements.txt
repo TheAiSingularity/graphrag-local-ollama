@@ -40,4 +40,4 @@ pytest-timeout==2.3.1
 ruff==0.5.0
 semversioner==2.0.3
 update-toml==0.2.1
-
+future
